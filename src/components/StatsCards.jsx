@@ -2,7 +2,7 @@ import { GiCow } from "react-icons/gi";
 import { MdOutlineTimer, MdFastfood, MdSensors } from "react-icons/md";
 import { FiHash, FiHeart, FiActivity } from "react-icons/fi";
 
-export default function StatsCards({ sensorData, useFirebase, lastUpdate, isOnline }) {
+export default function StatsCards({ sensorData, useFirebase, lastUpdate, isOnline, healthStatus }) {
   const isPresent = sensorData.cattle_present === 1 || sensorData.cattle_present === "1" || sensorData.cattle_present === true;
 
   /* feeding_duration is in seconds */
@@ -14,6 +14,11 @@ export default function StatsCards({ sensorData, useFirebase, lastUpdate, isOnli
     const diff = Math.floor((Date.now() - lastUpdate) / 1000);
     if (diff < 60) return `${diff}s ago`;
     return `${Math.floor(diff / 60)}m ago`;
+  };
+
+  const formatHealthStatus = (status) => {
+    if (!status) return "Unknown";
+    return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   };
 
   const cards = [
@@ -40,9 +45,9 @@ export default function StatsCards({ sensorData, useFirebase, lastUpdate, isOnli
       iconColor: "#059669",
       iconBg: "bg-emerald-50",
       label: "Health Status",
-      value: sensorData.health_status,
+      value: formatHealthStatus(healthStatus),
       unit: "",
-      description: "From sensor",
+      description: "From Profile node",
     },
     {
       icon: MdFastfood,
