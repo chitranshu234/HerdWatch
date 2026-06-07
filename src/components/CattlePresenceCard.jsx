@@ -2,7 +2,7 @@ import { GiCow } from "react-icons/gi";
 import { FiActivity } from "react-icons/fi";
 import { MdOutlineTimer, MdSensors } from "react-icons/md";
 
-export default function CattlePresenceCard({ cattlePresent, feedingDuration, visitCount, objectDistance }) {
+export default function CattlePresenceCard({ cattlePresent, feedingDuration, visitCount, cattleDistance }) {
   const isPresent = cattlePresent === 1 || cattlePresent === "1" || cattlePresent === true;
 
   /* feeding_duration is in seconds — format as mm:ss */
@@ -78,7 +78,7 @@ export default function CattlePresenceCard({ cattlePresent, feedingDuration, vis
         <div className="flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-xl px-3 py-2">
           <MdSensors className="text-lg" />
           <div>
-            <p className="text-base font-bold leading-none">{objectDistance} cm</p>
+            <p className="text-base font-bold leading-none">{cattleDistance} cm</p>
             <p className="text-[9px] text-white/60 mt-0.5">Cattle Distance</p>
           </div>
         </div>

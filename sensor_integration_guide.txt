@@ -31,7 +31,7 @@ this schema:
   "health_status": "Normal",
   "visit_count": 7,
   "feeding_duration": 720,
-  "object_distance": 45.2,
+  "cattle_distance": 45.2,
   "timestamp": "2026-05-30 02:15:00"
 }
 
@@ -44,7 +44,7 @@ Fields Description:
 * health_status (String): Health diagnostic status ("Normal", "Warning", "Critical").
 * visit_count (Integer): Cumulative count of cattle visits today.
 * feeding_duration (Integer): Total cumulative feeding duration in seconds.
-* object_distance (Float): Measured distance to object/cattle in centimeters (cm).
+* cattle_distance (Float): Measured distance to cattle/object in centimeters (cm). Note: "object_distance" is also supported for backward compatibility.
 * timestamp (String): Formatted date and time string of the sensor reading.
 
 ------------------------------------------------------------------------
@@ -91,7 +91,7 @@ void loop() {
   String healthStatusVal = "Normal";  // Computed health status from sensors
   int visitCountVal = 7;              // Total visits tracked by the microcontroller
   int feedingDurationVal = 720;       // Cumulative feeding time in seconds
-  float objDistanceVal = 45.2;        // Ultrasonic distance measurement in cm
+  float cattleDistanceVal = 45.2;     // Ultrasonic distance measurement in cm (cattle_distance)
   String timestampVal = "2026-05-30 02:15:00"; // Formatted timestamp
 
   // Load readings into JSON payload structure
@@ -104,7 +104,7 @@ void loop() {
   json.add("health_status", healthStatusVal);
   json.add("visit_count", visitCountVal);
   json.add("feeding_duration", feedingDurationVal);
-  json.add("object_distance", objDistanceVal);
+  json.add("cattle_distance", cattleDistanceVal); // Note: "object_distance" is also supported for backward compatibility
   json.add("timestamp", timestampVal);
 
   // Push to Firebase Realtime Database

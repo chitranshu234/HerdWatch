@@ -26,7 +26,7 @@ const DUMMY_SENSOR = {
   cattle_present: 0,
   visit_count: 0,
   feeding_duration: 0,
-  object_distance: 0,
+  cattle_distance: 0,
   food_at_arrival: 0,
   food_at_departure: 0,
   food_consumed: 0,
@@ -161,7 +161,7 @@ export default function Dashboard() {
               cattle_present:   raw.cattle_present !== undefined ? parseInt(raw.cattle_present) : 0,
               visit_count:      raw.visit_count !== undefined ? parseInt(raw.visit_count) : 0,
               feeding_duration: raw.feeding_duration !== undefined ? parseInt(raw.feeding_duration) : 0,
-              object_distance:  raw.object_distance !== undefined ? parseFloat(raw.object_distance) : 0,
+              cattle_distance:  raw.cattle_distance !== undefined ? parseFloat(raw.cattle_distance) : (raw.object_distance !== undefined ? parseFloat(raw.object_distance) : 0),
               food_at_arrival:  raw.food_at_arrival !== undefined ? parseInt(raw.food_at_arrival) : 0,
               food_at_departure:raw.food_at_departure !== undefined ? parseInt(raw.food_at_departure) : 0,
               food_consumed:    raw.food_consumed !== undefined ? parseInt(raw.food_consumed) : 0,
@@ -306,7 +306,7 @@ export default function Dashboard() {
                     cattlePresent={sensorData.cattle_present}
                     feedingDuration={sensorData.feeding_duration}
                     visitCount={sensorData.visit_count}
-                    objectDistance={sensorData.object_distance}
+                    cattleDistance={sensorData.cattle_distance}
                   />
                 </div>
                 <div className="lg:col-span-7">
@@ -339,7 +339,7 @@ export default function Dashboard() {
                     temperature={sensorData.temperature}
                     pressure={sensorData.pressure}
                     altitude={sensorData.altitude}
-                    objectDistance={sensorData.object_distance}
+                    cattleDistance={sensorData.cattle_distance}
                     timestamp={sensorData.timestamp}
                   />
                 </div>
@@ -371,7 +371,7 @@ export default function Dashboard() {
 }
 
 /* ─── Environmental Monitoring Panel with Collapsible Secondary/Collapsible ─── */
-function EnvironmentPanel({ temperature, pressure, altitude, objectDistance, timestamp }) {
+function EnvironmentPanel({ temperature, pressure, altitude, cattleDistance, timestamp }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -431,7 +431,7 @@ function EnvironmentPanel({ temperature, pressure, altitude, objectDistance, tim
               </div>
               <span className="text-[11px] text-emerald-600 font-medium">Cattle Distance</span>
             </div>
-            <span className="text-xs font-bold text-green-800">{objectDistance} cm</span>
+            <span className="text-xs font-bold text-green-800">{cattleDistance} cm</span>
           </div>
         </div>
       </div>
