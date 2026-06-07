@@ -110,6 +110,19 @@ export default function Dashboard() {
   const [isOnline, setIsOnline] = useState(false);
   const [useFirebase, setUseFirebase] = useState(false);
   const [activeTab, setActiveTab] = useState("feeder"); // "feeder" | "cow"
+  const [liveHumidity, setLiveHumidity] = useState(65);
+
+  /* ── Fetch Live Humidity from Open-Meteo ── */
+  useEffect(() => {
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current=relative_humidity_2m")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.current?.relative_humidity_2m !== undefined) {
+          setLiveHumidity(data.current.relative_humidity_2m);
+        }
+      })
+      .catch((err) => console.warn("Failed to fetch live humidity:", err));
+  }, []);
 
   /* ── Push history ── */
   const pushHistory = useCallback((data) => {
@@ -325,7 +338,7 @@ export default function Dashboard() {
                   <CowProfileCard cowData={cowData} />
                 </div>
                 <div className="lg:col-span-6">
-                  <THIMonitor thi={cowData.thi} thiZone={cowData.thi_zone} />
+                  <THIMonitor thi={cowData.thi} thiZone={cowData.thi_zone} liveHumidity={liveHumidity} />
                 </div>
               </div>
 

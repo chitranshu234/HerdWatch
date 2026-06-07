@@ -1,7 +1,7 @@
 import { FiThermometer, FiAlertTriangle, FiCheckCircle } from "react-icons/fi";
 import { WiHumidity } from "react-icons/wi";
 
-export default function THIMonitor({ thi, thiZone }) {
+export default function THIMonitor({ thi, thiZone, liveHumidity }) {
   const score = parseFloat(thi) || 0;
   const zone = thiZone || "comfort";
 
@@ -124,7 +124,7 @@ export default function THIMonitor({ thi, thiZone }) {
               </div>
               <div className="text-left">
                 <span className="text-[9px] text-emerald-400 block font-semibold">HUMIDITY</span>
-                <span className="text-xs font-bold text-green-900">65% (Fixed)</span>
+                <span className="text-xs font-bold text-green-900">{liveHumidity}% (Live API)</span>
               </div>
             </div>
           </div>
