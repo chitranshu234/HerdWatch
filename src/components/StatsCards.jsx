@@ -62,7 +62,7 @@ export default function StatsCards({ sensorData, useFirebase, lastUpdate, isOnli
       icon: MdSensors,
       iconColor: "#6366f1",
       iconBg: "bg-indigo-50",
-      label: "Object Distance",
+      label: "Cattle Distance",
       value: sensorData.object_distance,
       unit: "cm",
       description: "Ultrasonic sensor",
