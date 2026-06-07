@@ -79,7 +79,7 @@ export default function CattlePresenceCard({ cattlePresent, feedingDuration, vis
           <MdSensors className="text-lg" />
           <div>
             <p className="text-base font-bold leading-none">{objectDistance} cm</p>
-            <p className="text-[9px] text-white/60 mt-0.5">Object Distance</p>
+            <p className="text-[9px] text-white/60 mt-0.5">Cattle Distance</p>
           </div>
         </div>
       </div>

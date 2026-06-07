@@ -98,7 +98,7 @@ function generateDummyHistory() {
 }
 
 const MAX_HISTORY = 20;
-const OFFLINE_TIMEOUT = 10000;
+const OFFLINE_TIMEOUT = 4000; // Reduced to 4 seconds for minimized detection
 
 /* ─────────── Dashboard ─────────── */
 export default function Dashboard() {
@@ -106,9 +106,15 @@ export default function Dashboard() {
   const [allCattleData, setAllCattleData] = useState(DUMMY_ALL_CATTLE);
   const [selectedCowKey, setSelectedCowKey] = useState("cow3"); // Default to cow3 (TAG-003)
   const [history, setHistory] = useState(generateDummyHistory);
-  const [lastUpdate, setLastUpdate] = useState(Date.now());
-  const [isOnline, setIsOnline] = useState(false);
-  const [useFirebase, setUseFirebase] = useState(false);
+  
+  // Independent connection state tracking
+  const [lastUpdateFeeder, setLastUpdateFeeder] = useState(Date.now());
+  const [lastUpdateCattle, setLastUpdateCattle] = useState(Date.now());
+  const [isFeederOnline, setIsFeederOnline] = useState(false);
+  const [isCattleOnline, setIsCattleOnline] = useState(false);
+  const [useFirebaseFeeder, setUseFirebaseFeeder] = useState(false);
+  const [useFirebaseCattle, setUseFirebaseCattle] = useState(false);
+
   const [activeTab, setActiveTab] = useState("feeder"); // "feeder" | "cow"
   const [liveHumidity, setLiveHumidity] = useState(65);
 
@@ -140,7 +146,7 @@ export default function Dashboard() {
     let unsubscribeCow;
 
     try {
-      // Path 1 — Live sensor data
+      // Path 1 — Live sensor data (Feeder Node)
       const latestRef = ref(database, "readings/latest");
       unsubscribeLatest = onValue(
         latestRef,
@@ -161,17 +167,17 @@ export default function Dashboard() {
               food_consumed:    raw.food_consumed !== undefined ? parseInt(raw.food_consumed) : 0,
               timestamp:        raw.timestamp || new Date().toLocaleTimeString(),
             };
-            setUseFirebase(true);
+            setUseFirebaseFeeder(true);
             setSensorData(data);
-            setLastUpdate(Date.now());
-            setIsOnline(true);
+            setLastUpdateFeeder(Date.now());
+            setIsFeederOnline(true);
             pushHistory(data);
           }
         },
         (error) => console.warn("Firebase readings read failed:", error)
       );
 
-      // Path 2 — Cow profile + THI + diet plan for all cows
+      // Path 2 — Cow profile + THI + diet plan for all cows (Cattle Node)
       const cattleRef = ref(database, "cattle");
       unsubscribeCow = onValue(
         cattleRef,
@@ -198,7 +204,10 @@ export default function Dashboard() {
                 feeding_frequency: item.feeding_frequency !== undefined ? parseInt(item.feeding_frequency) : 0,
               };
             });
+            setUseFirebaseCattle(true);
             setAllCattleData(loadedCattle);
+            setLastUpdateCattle(Date.now());
+            setIsCattleOnline(true);
           }
         },
         (error) => console.warn("Firebase cow read failed:", error)
@@ -213,15 +222,20 @@ export default function Dashboard() {
     };
   }, [pushHistory]);
 
-  /* ── Offline detection ── */
+  /* ── Independent Offline detection ── */
   useEffect(() => {
     const iv = setInterval(() => {
-      if (Date.now() - lastUpdate > OFFLINE_TIMEOUT && useFirebase) {
-        setIsOnline(false);
+      // Check Feeder Node
+      if (Date.now() - lastUpdateFeeder > OFFLINE_TIMEOUT && useFirebaseFeeder) {
+        setIsFeederOnline(false);
       }
-    }, 2000);
+      // Check Cattle Node
+      if (Date.now() - lastUpdateCattle > OFFLINE_TIMEOUT && useFirebaseCattle) {
+        setIsCattleOnline(false);
+      }
+    }, 1000);
     return () => clearInterval(iv);
-  }, [lastUpdate, useFirebase]);
+  }, [lastUpdateFeeder, lastUpdateCattle, useFirebaseFeeder, useFirebaseCattle]);
 
   /* ── Computed Selected Cow ── */
   const cowData = allCattleData[selectedCowKey] || DUMMY_ALL_CATTLE.cow3;
@@ -230,7 +244,11 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen pb-12">
       <div className="w-full">
-        <TopBar isOnline={isOnline && useFirebase} useFirebase={useFirebase} />
+        {/* Render independent node statuses in Header */}
+        <TopBar 
+          isFeederOnline={isFeederOnline && useFirebaseFeeder} 
+          isCattleOnline={isCattleOnline && useFirebaseCattle} 
+        />
 
         {/* Navigation & Cow Selector Row */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 px-6">
@@ -294,9 +312,9 @@ export default function Dashboard() {
                 <div className="lg:col-span-7">
                   <StatsCards
                     sensorData={sensorData}
-                    useFirebase={useFirebase}
-                    lastUpdate={lastUpdate}
-                    isOnline={isOnline && useFirebase}
+                    useFirebase={useFirebaseFeeder}
+                    lastUpdate={lastUpdateFeeder}
+                    isOnline={isFeederOnline && useFirebaseFeeder}
                     healthStatus={cowData.health_status}
                   />
                 </div>
@@ -411,7 +429,7 @@ function EnvironmentPanel({ temperature, pressure, altitude, objectDistance, tim
               <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
                 <FiRadio className="text-base text-indigo-500" />
               </div>
-              <span className="text-[11px] text-emerald-600 font-medium">Object Distance</span>
+              <span className="text-[11px] text-emerald-600 font-medium">Cattle Distance</span>
             </div>
             <span className="text-xs font-bold text-green-800">{objectDistance} cm</span>
           </div>
