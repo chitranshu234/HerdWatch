@@ -98,7 +98,7 @@ function generateDummyHistory() {
 }
 
 const MAX_HISTORY = 20;
-const OFFLINE_TIMEOUT = 4000; // Reduced to 4 seconds for minimized detection
+const OFFLINE_TIMEOUT = 10000; // Updated to 10 seconds for both sensors
 
 /* ─────────── Dashboard ─────────── */
 export default function Dashboard() {
